@@ -14,7 +14,9 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
   const router = useRouter();
   const { lang } = useGlobal();
 
-  const isDetailPage = /^\/product\/\d+$/.test(pathname);
+  const isDetailPage =
+    /^\/product\/\d+$/.test(pathname) ||
+    /^\/category\/\d+$/.test(pathname);
 
   const backLabel =
     lang === "fa"

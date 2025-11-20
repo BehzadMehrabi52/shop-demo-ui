@@ -13,6 +13,7 @@ import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
 import { Navigation, Pagination } from "swiper/modules";
+import { getProductById } from "../../_services/api";
 
 export default function ProductDetailPage() {
   const params = useParams();
@@ -28,10 +29,7 @@ export default function ProductDetailPage() {
   useEffect(() => {
     const fetchProduct = async () => {
       try {
-        const res = await fetch(
-          `http://localhost:5001/products/${id}?lang=${lang}&currency=${currency}`
-        );
-        const data: Product = await res.json();
+        const data = await getProductById(Number(id), lang, currency);
         setProduct(data);
         setSelectedImage(data.images[0]);
       } catch (err) {
