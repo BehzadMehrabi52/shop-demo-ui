@@ -16,11 +16,14 @@ import {
   Typography,
 } from "@mui/material";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+
 
 export default function CheckoutPage() {
-  const { cart, refreshData, isRefreshing, totalPrice } = useCart();
+  const { cart, clearCart, refreshData, isRefreshing, totalPrice } = useCart();
   const { lang, currency } = useGlobal();
   const { user } = useAuth();
+  const router = useRouter();
 
   const isRTL = lang === "fa";
   const currencyLabel = getCurrencyLabel(currency, lang);
@@ -60,6 +63,29 @@ export default function CheckoutPage() {
   if (isRefreshing) {
     return <div style={{ padding: 32 }}>{t.updating}</div>;
   }
+
+    const handlePayment = async () => {
+    const order = {
+        items: cart,
+        total: totalPrice,
+        currency,
+        customer: { name, email, address },
+        date: new Date().toISOString(),
+    };
+
+    const res = await fetch("http://localhost:5001/orders", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(order),
+    });
+
+    const data = await res.json();
+
+    if (data.success) {
+        clearCart();
+        router.push(`/order-success?orderId=${data.orderId}`);
+    }
+    };
 
   if (cart.length === 0) {
     return (
@@ -122,11 +148,14 @@ export default function CheckoutPage() {
             </Box>
 
             {/* دکمه پرداخت در موبایل پایین می‌آید */}
-            <Box sx={{ mt: 4, display: { xs: "block", md: "none" } }}>
-              <Button variant="contained" fullWidth sx={{ py: 1.5 }}>
+            <Button
+                variant="contained"
+                fullWidth
+                sx={{ py: 1.5 }}
+                onClick={handlePayment}
+                >
                 {t.pay}
-              </Button>
-            </Box>
+            </Button>
           </Card>
         </Grid>
 
@@ -177,11 +206,12 @@ export default function CheckoutPage() {
 
             {/* دکمه پرداخت در دسکتاپ */}
             <Button
-              variant="contained"
-              fullWidth
-              sx={{ mt: 3, py: 1.5, display: { xs: "none", md: "block" } }}
-            >
-              {t.pay}
+                variant="contained"
+                fullWidth
+                sx={{ mt: 3, py: 1.5 }}
+                onClick={handlePayment}
+                >
+                {t.pay}
             </Button>
           </Card>
         </Grid>

@@ -16,9 +16,12 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
-export const metadata: Metadata = {
+export const metadata = {
   title: "Shop App",
   description: "Multi-language eCommerce",
+  icons: {
+    icon: "/store.png",
+  },
 };
 
 export default function RootLayout({
