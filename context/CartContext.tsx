@@ -2,6 +2,7 @@
 
 import React, { createContext, useContext, useEffect, useState } from "react";
 import { Product } from "../types/product";
+import { getProductById } from "@/app/_services/api";
 
 export type CartItem = {
   id: number;
@@ -102,11 +103,10 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
     setIsRefreshing(true);
 
     for (const item of cart) {
-      const res = await fetch(`http://localhost:5001/products/${item.id}?currency=${currency}&lang=${lang}`);
-      const data = await res.json();
+      const data = await getProductById(item.id, lang, currency);
 
       console.log("API UPDATED PRODUCT:", data);
-      
+
       updateItemData(item.id, {
         price: data.price,
         title: data.title
