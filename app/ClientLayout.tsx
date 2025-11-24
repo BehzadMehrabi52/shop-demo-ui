@@ -8,15 +8,14 @@ import { useGlobal } from "../context/GlobalContext";
 import { usePathname, useRouter } from "next/navigation";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import { Button } from "@mui/material";
+import CartIcon from "@/components/CartIcon";
 
 export default function ClientLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const router = useRouter();
   const { lang } = useGlobal();
 
-  const isDetailPage =
-    /^\/product\/\d+$/.test(pathname) ||
-    /^\/category\/\d+$/.test(pathname);
+  const showBackButton = pathname !== "/";
 
   const backLabel =
     lang === "fa"
@@ -35,7 +34,8 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
     <>
       <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", p: 1 }}>
         <LangSwitcher />
-        {isDetailPage && (
+        <CartIcon />
+        {showBackButton && (
           <Button
             onClick={() => router.back()}
             variant="contained"

@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
-import { Typography, Card, CardContent, Grid } from "@mui/material";
+import { Typography, Card, CardContent, Grid, Button, Box } from "@mui/material";
 import ZoomImage from "../../../components/ZoomImage";
 import { Product } from "../../../types/product";
 import { useGlobal } from "../../../context/GlobalContext";
@@ -14,15 +14,19 @@ import "swiper/css/navigation";
 import "swiper/css/pagination";
 import { Navigation, Pagination } from "swiper/modules";
 import { getProductById } from "../../_services/api";
+import { useCart } from "../../../context/CartContext";
 
 export default function ProductDetailPage() {
   const params = useParams();
   const { id } = params;
   const { lang, currency } = useGlobal();
+  const { addToCart, increaseQty, decreaseQty, removeFromCart } = useCart();
 
   const [product, setProduct] = useState<Product | null>(null);
   const [selectedImage, setSelectedImage] = useState("");
   const [loading, setLoading] = useState(true);
+  const [added, setAdded] = useState(false);
+  const [qty, setQty] = useState(1);
 
   const isRTL = lang === "fa";
 
@@ -113,6 +117,55 @@ export default function ProductDetailPage() {
               {product.price} {getCurrencyLabel(currency, lang)}
             </Typography>
             <Typography variant="body1">{product.description}</Typography>
+
+            {!added ? (
+              <Button
+                variant="contained"
+                color="primary"
+                onClick={() => {
+                  addToCart(product); // اضافه به سبد
+                  setAdded(true);     // تغییر حالت به حالت کنترل تعداد
+                }}
+                sx={{ mt: 3 }}
+              >
+                {lang === "fa"
+                  ? "افزودن به سبد"
+                  : lang === "tr"
+                  ? "Sepete Ekle"
+                  : "Add to Cart"}
+              </Button>
+            ) : (
+              // اگر اضافه شد → کنترل تعداد
+              <Box sx={{ display: "flex", alignItems: "center", gap: 2, mt: 3 }}>
+                <Button
+                  variant="outlined"
+                  onClick={() => {
+                    if (qty > 1) {
+                      setQty(qty - 1);
+                      decreaseQty(product.id);
+                    } else {
+                      // اگر به صفر رسید → حذف کامل
+                      removeFromCart(product.id);
+                      setAdded(false);
+                    }
+                  }}
+                >
+                  -
+                </Button>
+
+                <Typography variant="h6">{qty}</Typography>
+
+                <Button
+                  variant="outlined"
+                  onClick={() => {
+                    setQty(qty + 1);
+                    increaseQty(product.id);
+                  }}
+                >
+                  +
+                </Button>
+              </Box>
+            )}
           </CardContent>
         </Card>
       </Grid>
