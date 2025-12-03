@@ -59,13 +59,8 @@ Communication happens via REST API calls.
 ## ▶️ Running the Project
 
 ```bash
+nom install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 App will run on:
 http://localhost:3000
